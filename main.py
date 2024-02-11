@@ -6,17 +6,17 @@ def password_from_database(database):
     conn = sqlite3.connect(database)
     cursor = conn.cursor()
     cursor.execute("SELECT email, password FROM users")
-    credentials = cursor.fetchall()
+    pass_from_db = cursor.fetchall()
     conn.close()
-    return credentials
+    return pass_from_db
 
 
-def decrypt_password(password, wordlist):
+def decrypt_password(hashed_password, wordlist):
     with open(wordlist, 'r', encoding='utf-8') as file:
         for line in file:
             password = line.strip()
-            hashed_password = hashlib.sha256(password.encode()).hexdigest()
-            if hashed_password == password:
+            hashed_attempt = hashlib.sha256(password.encode()).hexdigest()
+            if hashed_attempt == hashed_password:
                 return password
     return None
 
