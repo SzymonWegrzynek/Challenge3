@@ -16,12 +16,15 @@ def database_connection():
 
 
 def decrypt_password(hashed_password):
+    list_of_hashes = ['sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'md5', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512']
+
     with open(r'Challenge3\rockyou.txt', 'r', encoding='utf-8') as file:
         for line in file:
             password = line.strip()
-            decryption = hashlib.sha256(password.encode()).hexdigest()
-            if decryption == hashed_password:
-                return password
+            for algorithm in list_of_hashes:
+                decryption = hashlib.new(algorithm, password.encode()).hexdigest()
+                if decryption == hashed_password:
+                    return password
     return None
 
 
