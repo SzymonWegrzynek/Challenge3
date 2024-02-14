@@ -1,39 +1,40 @@
 import sqlite3
 import hashlib
+import sys
 
 
-def password_from_database(database):
-    conn = sqlite3.connect(database)
+sys.stdout.reconfigure(encoding='utf-8')
+
+
+def database_connection():
+    conn = sqlite3.connect(r'Challenge3\users-challenge.db')
     cursor = conn.cursor()
     cursor.execute("SELECT email, password FROM users")
-    pass_from_db = cursor.fetchall()
+    data = cursor.fetchall()
     conn.close()
-    return pass_from_db
+    return data
 
 
-def decrypt_password(hashed_password, wordlist):
-    with open(wordlist, 'r', encoding='utf-8') as file:
+def decrypt_password(hashed_password):
+    with open(r'Challenge3\rockyou.txt', 'r', encoding='utf-8') as file:
         for line in file:
             password = line.strip()
-            hashed_attempt = hashlib.sha256(password.encode()).hexdigest()
-            if hashed_attempt == hashed_password:
+            decryption = hashlib.sha256(password.encode()).hexdigest()
+            if decryption == hashed_password:
                 return password
     return None
 
 
 def main():
-    database = r'c:\Users\super\Downloads\users-challenge.db'
-    wordlist = r'c:\Users\super\challenge#3\Challenge3\rockyou.txt'
-
-    pass_from_db = password_from_database(database)
+    db = database_connection()
     
-    for email, password in pass_from_db:
-        decrypted_password = decrypt_password(password, wordlist)
+    for email, hashed_password in db:
+        decrypted_password = decrypt_password(hashed_password)
         if decrypted_password:
-            print(f"For {email} password is {decrypted_password}")
+            print(f"For {email} password is {decrypted_password} 👍")
         else:
-            print(f"Something went wrong here {email}")
-
+            print(f"Something went wrong with {email} 👎")
+    
 
 if __name__ == "__main__":
     main()
